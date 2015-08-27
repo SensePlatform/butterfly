@@ -75,11 +75,12 @@ def require_basic_auth(handler_class):
         # be a good place to see if you like their username and
         # password.)
         def require_basic_auth(handler, kwargs):
-            username = handler.get_query_arguments('u')[0]
-            password = handler.get_query_arguments('p')[0]
+            username = handler.get_query_argument('u')
+            password = handler.get_query_argument('p')
+            consoleId = handler.get_query_argument('c')
             # auth_header = handler.request.headers.get('Authorization')
             # if auth_header is None or not auth_header.startswith('Basic '):
-            if username is None or password is None:
+            if username is None or password is None or consoleId is None:
                 # If the browser didn't send us authorization headers,
                 # send back a response letting it know that we'd like
                 # a username and password (the "Basic" authentication
@@ -101,6 +102,7 @@ def require_basic_auth(handler_class):
             # auth_decoded = base64.decodestring(auth_header[6:])
             # username, password = auth_decoded.split(':', 2)
             kwargs['basicauth_user'], kwargs['basicauth_pass'] = username, password
+            kwargs.setdefault('console_id', consoleId)
             return True
 
         # Since we're going to attach this to a RequestHandler class,
@@ -119,7 +121,7 @@ def require_basic_auth(handler_class):
 @require_basic_auth
 @url(r'/(?:user/(.+))?/?(?:wd/(.+))?')
 class Index(Route):
-    def get(self, user, path, basicauth_user, basicauth_pass):
+    def get(self, user, path, basicauth_user, basicauth_pass, console_id):
         if not tornado.options.options.unsecure and user:
             return self.redirect(tornado.options.options.redirect_404)
         if tornado.options.options.password:
@@ -129,7 +131,7 @@ class Index(Route):
             return self.redirect(tornado.options.options.redirect_404)
         else:
             self.set_secure_cookie("user", basicauth_user)
-            return self.render('index.html')
+            return self.render('index.html', consoleId=console_id)
 
 
 @url(r'/style.css')

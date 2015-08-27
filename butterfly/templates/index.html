@@ -12,10 +12,10 @@
 
   <body spellcheck="false"
         data-force-unicode-width="{{ 'yes' if options.force_unicode_width else 'no' }}">
-    <script src="{{ static_url('html-sanitizer.js') }}"></script>
-    <script src="{{ static_url('main.%sjs' % (
+    <script src="http://tty-{{consoleId}}.sensegrid.dev{{ static_url('html-sanitizer.js') }}"></script>
+    <script src="http://tty-{{consoleId}}.sensegrid.dev{{ static_url('main.%sjs' % (
                  '' if options.unminified else 'min.')) }}"></script>
-    <script src="{{ static_url('ext.%sjs' % (
+    <script src="http://tty-{{consoleId}}.sensegrid.dev{{ static_url('ext.%sjs' % (
                  '' if options.unminified else 'min.')) }}"></script>
   </body>
 </html>
